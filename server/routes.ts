@@ -109,6 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const taskData = insertTaskSchema.parse({
         ...req.body,
         assignedBy: userId,
+        deadline: new Date(req.body.deadline),
       });
       
       const task = await storage.createTask(taskData);
