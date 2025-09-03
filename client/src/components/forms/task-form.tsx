@@ -105,20 +105,28 @@ export default function TaskForm({ linkedUsers }: TaskFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Assign to User</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger data-testid="select-assign-user">
-                        <SelectValue placeholder="Select a user" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {linkedUsers.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.firstName} {user.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {linkedUsers.length === 0 ? (
+                    <div className="p-3 text-sm text-muted-foreground bg-muted rounded-md">
+                      No linked users found. Users need to register with your admin unique number to appear here.
+                    </div>
+                  ) : (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-assign-user">
+                          <SelectValue placeholder="Select a user" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {linkedUsers.map((user) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {user.firstName && user.lastName 
+                              ? `${user.firstName} ${user.lastName}` 
+                              : user.email || `User ${user.id.slice(-4)}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
