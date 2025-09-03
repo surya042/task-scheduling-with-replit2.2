@@ -42,21 +42,26 @@ export default function TaskForm({ linkedUsers }: TaskFormProps) {
 
   const createTaskMutation = useMutation({
     mutationFn: async (data: TaskFormData) => {
+      console.log("Creating task with data:", data);
       const payload = {
         ...data,
         deadline: new Date(data.deadline).toISOString(),
       };
-      await apiRequest("POST", "/api/admin/tasks", payload);
+      console.log("Sending payload:", payload);
+      return await apiRequest("POST", "/api/admin/tasks", payload);
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("Task created successfully:", result);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/tasks"] });
       toast({
-        title: "Task Created",
-        description: "Task has been assigned successfully",
+        title: "Task Assigned Successfully!",
+        description: "The task has been assigned to the user and they will see it in their dashboard.",
       });
       form.reset();
     },
     onError: (error) => {
+      console.error("Task creation error:", error);
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",
@@ -69,14 +74,17 @@ export default function TaskForm({ linkedUsers }: TaskFormProps) {
         return;
       }
       toast({
-        title: "Error",
-        description: "Failed to create task",
+        title: "Failed to Create Task",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: TaskFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Form errors:", form.formState.errors);
+    console.log("Form is valid:", form.formState.isValid);
     createTaskMutation.mutate(data);
   };
 
@@ -170,7 +178,7 @@ export default function TaskForm({ linkedUsers }: TaskFormProps) {
             <div className="flex space-x-4">
               <Button
                 type="submit"
-                disabled={createTaskMutation.isPending}
+                disabled={createTaskMutation.isPending || linkedUsers.length === 0}
                 data-testid="button-schedule-task"
               >
                 <NotebookPen className="h-4 w-4 mr-2" />
@@ -179,12 +187,27 @@ export default function TaskForm({ linkedUsers }: TaskFormProps) {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => form.reset()}
+                onClick={() => {
+                  console.log("Reset form clicked");
+                  form.reset();
+                }}
                 data-testid="button-cancel"
               >
                 Cancel
               </Button>
             </div>
+            
+            {/* Debug info during development */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-3 bg-muted rounded text-xs">
+                <div>Form Valid: {form.formState.isValid ? 'Yes' : 'No'}</div>
+                <div>Linked Users: {linkedUsers.length}</div>
+                <div>Form Values: {JSON.stringify(form.getValues())}</div>
+                {Object.keys(form.formState.errors).length > 0 && (
+                  <div>Errors: {JSON.stringify(form.formState.errors)}</div>
+                )}
+              </div>
+            )}
           </form>
         </Form>
       </CardContent>
