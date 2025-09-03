@@ -183,6 +183,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...req.body,
           isFinished: req.body.isFinished === 'true',
         };
+        console.log("Raw request body:", req.body);
+        console.log("Processed body data:", bodyData);
         updateData = updateTaskSchema.parse(bodyData);
         
         // Handle file uploads
