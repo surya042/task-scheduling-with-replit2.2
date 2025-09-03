@@ -178,7 +178,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (isTaskOwner) {
         // User submitting evidence
-        updateData = updateTaskSchema.parse(req.body);
+        // Convert string values from FormData to proper types
+        const bodyData = {
+          ...req.body,
+          isFinished: req.body.isFinished === 'true',
+        };
+        updateData = updateTaskSchema.parse(bodyData);
         
         // Handle file uploads
         if (req.files && req.files.length > 0) {
@@ -187,7 +192,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } else if (isTaskAdmin) {
         // Admin reviewing task
-        updateData = updateTaskSchema.parse(req.body);
+        // Convert string values from FormData to proper types
+        const bodyData = {
+          ...req.body,
+          isAdminSeen: req.body.isAdminSeen === 'true',
+        };
+        updateData = updateTaskSchema.parse(bodyData);
       }
       
       const updatedTask = await storage.updateTask(taskId, updateData);
