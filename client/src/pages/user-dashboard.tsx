@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, ListChecks, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Calendar, ListChecks, CheckCircle2, AlertTriangle, ShieldQuestion } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import TaskCalendar from "@/components/calendar/task-calendar";
 import EvidenceForm from "@/components/forms/evidence-form";
@@ -125,6 +126,16 @@ export default function UserDashboard() {
                   <span className="text-destructive" data-testid="text-overdue-tasks">{stats.overdue}</span>
                 </div>
               </div>
+            </div>
+            
+            {/* Role Change Button */}
+            <div className="mt-6">
+              <Link href="/register">
+                <Button variant="outline" className="w-full justify-start" data-testid="button-change-role">
+                  <ShieldQuestion className="h-4 w-4 mr-3" />
+                  Setup Admin Account
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
