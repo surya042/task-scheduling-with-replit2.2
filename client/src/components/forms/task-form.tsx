@@ -16,7 +16,9 @@ import { insertTaskSchema } from "@shared/schema";
 import type { User } from "@shared/schema";
 import { z } from "zod";
 
-const taskFormSchema = insertTaskSchema.extend({
+const taskFormSchema = insertTaskSchema.omit({
+  assignedBy: true, // This will be added by the server
+}).extend({
   deadline: z.string().min(1, "Deadline is required"),
 });
 
